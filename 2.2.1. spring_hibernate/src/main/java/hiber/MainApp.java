@@ -1,12 +1,13 @@
 package hiber;
 
 import hiber.config.AppConfig;
+import hiber.model.Car;
 import hiber.model.User;
 import hiber.service.UserService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import javax.persistence.NoResultException;
 import java.sql.SQLException;
-import java.util.List;
 
 public class MainApp {
    public static void main(String[] args) throws SQLException {
@@ -15,18 +16,31 @@ public class MainApp {
 
       UserService userService = context.getBean(UserService.class);
 
-      userService.add(new User("User1", "Lastname1", "user1@mail.ru"));
-      userService.add(new User("User2", "Lastname2", "user2@mail.ru"));
-      userService.add(new User("User3", "Lastname3", "user3@mail.ru"));
-      userService.add(new User("User4", "Lastname4", "user4@mail.ru"));
+      User arnold = new User("Arnold", "Swarznegger", "arni@gmail.com");
+      User bruce = new User("Bruce", "Wayne", "ibanez@ya.ru");
+      User joe = new User("Joe", "Cocker", "lalala@mail.com");
+      User rachel = new User("Rachel", "Green", "ross@gmail.com");
 
-      List<User> users = userService.listUsers();
-      for (User user : users) {
-         System.out.println("Id = "+user.getId());
-         System.out.println("First Name = "+user.getFirstName());
-         System.out.println("Last Name = "+user.getLastName());
-         System.out.println("Email = "+user.getEmail());
-         System.out.println();
+      Car shevrole = new Car("bezPonatia", 23);
+      Car lexus = new Car("krasivaya", 34);
+      Car vw = new Car("Jook", 54);
+      Car batmobile = new Car("a1", 67);
+
+      userService.add(arnold.setCar(shevrole).setUser(arnold));
+      userService.add(bruce.setCar(lexus).setUser(bruce));
+      userService.add(joe.setCar(vw).setUser(joe));
+      userService.add(rachel.setCar(batmobile).setUser(rachel));
+
+      for (User user : userService.listUsers()) {
+         System.out.println(user + " " + user.getCar());
+      }
+
+      System.out.println(userService.getUserByCar("krasivaya", 34));
+
+      try {
+         User notFoundUser = userService.getUserByCar("niva", 11);
+      } catch (NoResultException e) {
+         System.out.println("User not found");
       }
 
       context.close();
